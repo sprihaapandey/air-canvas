@@ -7,12 +7,16 @@ brush_color = (255, 255, 255)
 brush_size = 5
 last_point = None  # Initialize last_point globally
 show_instructions = False
+inst_button_width = 200
+inst_button_height = 100
+inst_box_width = 550
+inst_box_height = 420
 
 def draw(event, x, y, flags, param):
     global drawing, last_point, brush_color, brush_size, show_instructions
 
     if event == cv2.EVENT_LBUTTONDOWN:  # Start or stop drawing
-        if 0 <= x <= 200 and 0 <= y <= 100:
+        if 0 <= x <= inst_button_width and 0 <= y <= inst_button_height:
             show_instructions = not show_instructions
             return
         drawing = not drawing
@@ -35,7 +39,7 @@ def handle_keys(key):
         brush_color = (255, 0, 0)
     elif key == ord('w'):
         brush_color = (255, 255, 255)
-    elif key == ord('k'):
+    elif key == ord('e'):
         brush_color = (0, 0, 0)
     elif key == ord('+'):
         brush_size += 1
@@ -43,20 +47,21 @@ def handle_keys(key):
         brush_size = max(1, brush_size - 1)
 
 def display_instructions(temp_canvas):
+    cv2.rectangle(temp_canvas, (0, inst_button_height), (inst_box_width, inst_button_height + inst_box_height), (200, 200, 200), -1)
     instructions = [
         "Press 'r' for Red",
         "Press 'g' for Green",
         "Press 'b' for Blue",
         "Press 'w' for White",
-        "Press 'k' for Eraser (Black)",
+        "Press 'e' for Eraser (Black)",
         "Press '+' to increase brush size",
         "Press '-' to decrease brush size",
         "Press 's' to save the painting",
         "Press 'q' to quit"
     ]
-    y_offset = 120  # Initial y-offset for text
+    y_offset = 140  # Initial y-offset for text
     for instruction in instructions:
-        cv2.putText(temp_canvas, instruction, (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 200, 200), 1, cv2.LINE_AA)
+        cv2.putText(temp_canvas, instruction, (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
         y_offset += 40
 
 
@@ -66,8 +71,8 @@ cv2.setMouseCallback("Paint", draw)
 
 while True:
     temp_canvas = canvas.copy()  # Use a copy to overlay instructions
-    cv2.rectangle(temp_canvas, (0, 0), (200, 100), (200, 200, 200), -1)
-    cv2.putText(temp_canvas, "Instructions", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+    cv2.rectangle(temp_canvas, (0, 0), (inst_button_width, inst_button_height), (200, 200, 200), -1)
+    cv2.putText(temp_canvas, "Instructions", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
     if show_instructions:
         display_instructions(temp_canvas)  # Display instructions on the canvas
 
