@@ -1,33 +1,46 @@
 import cv2
 import numpy as np
+import mediapipe as mp
 
 canvas = np.zeros((2000, 2000, 3), dtype="uint8")
 drawing = False
 brush_color = (255, 255, 255)
 brush_size = 5
-last_point = None  # Initialize last_point globally
+last_point = None
 show_instructions = False
 inst_button_width = 200
 inst_button_height = 100
 inst_box_width = 550
 inst_box_height = 420
 
+mp_hands = mp.solutions.hands
+hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7)
+mp_draw = mp.solutions.drawing_utils
+
+def get_index_finger_position(frame):
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    results = hands.process(frame_rgb)
+    if results.multi_hand_landmarks:
+        hand_landmarks = results.multi_hand_landmarks[0]
+        index_finger_tip = hand_landmarks.landmark[8]
+        
+        height, width, _ = frame.shape
+        x = int(index_finger_tip.x * width)
+        y = int(index_finger_tip.y * height)
+        
+        mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+        return (x, y)
+    return None
+
 def draw(event, x, y, flags, param):
     global drawing, last_point, brush_color, brush_size, show_instructions
 
-    if event == cv2.EVENT_LBUTTONDOWN:  # Start or stop drawing
+    if event == cv2.EVENT_LBUTTONDOWN:
         if 0 <= x <= inst_button_width and 0 <= y <= inst_button_height:
             show_instructions = not show_instructions
             return
         drawing = not drawing
-        last_point = None  # Reset the last point to avoid abrupt lines
-    elif event == cv2.EVENT_MOUSEMOVE:  # Draw when moving with button pressed
-        if last_point is not None and drawing:
-            cv2.line(canvas, last_point, (x, y), brush_color, brush_size)  # Connect previous point to current
-        last_point = (x, y) 
-    
-
-
+        last_point = None
 
 def handle_keys(key):
     global brush_color, brush_size
@@ -57,33 +70,62 @@ def display_instructions(temp_canvas):
         "Press '+' to increase brush size",
         "Press '-' to decrease brush size",
         "Press 's' to save the painting",
-        "Press 'q' to quit"
+        "Press 'q' to quit",
+        "Use index finger to draw"
     ]
-    y_offset = 140  # Initial y-offset for text
+    y_offset = 140
     for instruction in instructions:
         cv2.putText(temp_canvas, instruction, (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
         y_offset += 40
 
-
 # Main loop
 cv2.namedWindow("Paint")
 cv2.setMouseCallback("Paint", draw)
+cap = cv2.VideoCapture(0)
 
 while True:
-    temp_canvas = canvas.copy()  # Use a copy to overlay instructions
+    success, frame = cap.read()
+    if not success:
+        break
+        
+    frame = cv2.flip(frame, 1)
+    
+    finger_pos = get_index_finger_position(frame)
+    if finger_pos and drawing:
+        x, y = finger_pos
+        canvas_x = int(x * (canvas.shape[1] / frame.shape[1]))
+        canvas_y = int(y * (canvas.shape[0] / frame.shape[0]))
+        
+        if last_point is not None:
+            cv2.line(canvas, last_point, (canvas_x, canvas_y), brush_color, brush_size)
+        last_point = (canvas_x, canvas_y)
+    elif not drawing:
+        last_point = None
+
+    frame_resized = cv2.resize(frame, (canvas.shape[1], canvas.shape[0]))
+    
+    temp_canvas = canvas.copy()
     cv2.rectangle(temp_canvas, (0, 0), (inst_button_width, inst_button_height), (200, 200, 200), -1)
     cv2.putText(temp_canvas, "Instructions", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
+    
     if show_instructions:
-        display_instructions(temp_canvas)  # Display instructions on the canvas
+        display_instructions(temp_canvas)
 
+    cv2.imshow("Camera Feed", frame)
     cv2.imshow("Paint", temp_canvas)
+
     key = cv2.waitKey(1) & 0xFF
     if key != 255:
         handle_keys(key)
     if key == ord('s'):
         cv2.imwrite("my_painting.jpg", canvas)
         print("Painting saved as 'my_painting.jpg'")
-    if key == ord('q'):
+    elif key == ord('d'):
+        drawing = not drawing
+        last_point = None
+    elif key == ord('q'):
         break
 
+cap.release()
 cv2.destroyAllWindows()
+hands.close()
