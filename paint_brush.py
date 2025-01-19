@@ -3,7 +3,6 @@ import numpy as np
 import mediapipe as mp
 
 canvas = np.zeros((2000, 2000, 3), dtype="uint8")
-drawing = False
 brush_color = (255, 255, 255)
 brush_size = 5
 last_point = None
@@ -32,14 +31,12 @@ def get_index_finger_position(frame):
         return (x, y)
     return None
 
-def draw(event, x, y, flags, param):
-    global drawing, last_point, brush_color, brush_size, show_instructions
-
-    if event == cv2.EVENT_LBUTTONDOWN:
+def event_handler(event, x, y, flags, param):
+    global last_point, brush_color, brush_size, show_instructions
+    if event == cv2.EVENT_LBUTTONUP:
         if 0 <= x <= inst_button_width and 0 <= y <= inst_button_height:
             show_instructions = not show_instructions
             return
-        drawing = not drawing
         last_point = None
 
 def handle_keys(key):
@@ -80,7 +77,7 @@ def display_instructions(temp_canvas):
 
 # Main loop
 cv2.namedWindow("Paint")
-cv2.setMouseCallback("Paint", draw)
+cv2.setMouseCallback("Paint", event_handler)
 cap = cv2.VideoCapture(0)
 
 while True:
@@ -89,21 +86,6 @@ while True:
         break
         
     frame = cv2.flip(frame, 1)
-    
-    finger_pos = get_index_finger_position(frame)
-    if finger_pos and drawing:
-        x, y = finger_pos
-        canvas_x = int(x * (canvas.shape[1] / frame.shape[1]))
-        canvas_y = int(y * (canvas.shape[0] / frame.shape[0]))
-        
-        if last_point is not None:
-            cv2.line(canvas, last_point, (canvas_x, canvas_y), brush_color, brush_size)
-        last_point = (canvas_x, canvas_y)
-    elif not drawing:
-        last_point = None
-
-    frame_resized = cv2.resize(frame, (canvas.shape[1], canvas.shape[0]))
-    
     temp_canvas = canvas.copy()
     cv2.rectangle(temp_canvas, (0, 0), (inst_button_width, inst_button_height), (200, 200, 200), -1)
     cv2.putText(temp_canvas, "Instructions", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)
@@ -120,11 +102,21 @@ while True:
     if key == ord('s'):
         cv2.imwrite("my_painting.jpg", canvas)
         print("Painting saved as 'my_painting.jpg'")
-    elif key == ord('d'):
-        drawing = not drawing
         last_point = None
     elif key == ord('q'):
         break
+    finger_pos = get_index_finger_position(frame)
+    if finger_pos:
+        x, y = finger_pos
+        canvas_x = int(x * (canvas.shape[1] / frame.shape[1]))
+        canvas_y = int(y * (canvas.shape[0] / frame.shape[0]))
+        
+        if last_point is not None:
+            cv2.line(canvas, last_point, (canvas_x, canvas_y), brush_color, brush_size)
+        last_point = (canvas_x, canvas_y)
+
+    frame_resized = cv2.resize(frame, (canvas.shape[1], canvas.shape[0]))
+    
 
 cap.release()
 cv2.destroyAllWindows()
