@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Python Hand Tracking Paint</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #2c2c2c;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-feed {
+            border: 3px solid #fff;
+            border-radius: 10px;
+            width: 1000px;
+            height: 480px;
+            object-fit: cover;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+            background: #3c3c3c;
+            border-radius: 10px;
+            min-width: 200px;
+            max-width: 250px;
+        }
+
+        .action-btn {
+            padding: 15px 20px;
+            font-size: 16px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .save-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .clear-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        h3 {
+            margin: 10px 0 5px 0;
+            color: #ddd;
+            text-align: center;
+        }
+
+        .status {
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            background: #444;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Python Hand Tracking Paint</h1>
+
+    <div class="status" id="status">
+        Show your index finger to the camera to start drawing!
+    </div>
+
+    <div class="container">
+        <div class="video-container">
+            <h3>🎨 Drawing Canvas</h3>
+            <img src="/canvas_feed" alt="Canvas" class="video-feed" />
+        </div>
+
+        <div class="controls">
+            <div class="instructions">
+                <strong>How to use:</strong><br />
+                • Point your finger at the colored buttons in the canvas to change colors<br />
+                • Use the size buttons (small/medium/large) to change brush size<br />
+                • Move your finger anywhere else to draw<br />
+                • Current settings are highlighted with cyan borders
+            </div>
+
+            <h3>Actions</h3>
+            <button class="action-btn save-btn" onclick="savePainting()">💾 Save Painting</button>
+            <button class="action-btn clear-btn" onclick="clearCanvas()">🗑️ Clear Canvas</button>
+        </div>
+    </div>
+
+    <script>
+        function clearCanvas() {
+            fetch('/clear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            document.getElementById('status').textContent = 'Canvas cleared!';
+        }
+
+        function savePainting() {
+            fetch('/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            }).then(() => {
+                window.location.href = '/download';
+                document.getElementById('status').textContent = 'Painting saved and downloaded!';
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            switch (e.key.toLowerCase()) {
+                case 's':
+                    savePainting();
+                    break;
+                case 'c':
+                    clearCanvas();
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
