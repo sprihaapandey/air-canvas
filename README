@@ -1,37 +1,57 @@
-# Air Canvas
+# Air Canvas 🎨
 
-Air canvas is an application that tracks the of the user’s index finger through a webcam to create drawings on a digital canvas.
+Air Canvas is an application that tracks the user’s **index finger** through a webcam to create drawings on a digital canvas in real time.
 
-## Prerequisites
+---
 
-The following packages are required and can be installed using pip.
+## 📦 Prerequisites
+
+Install the required packages with:
 
 ```bash
 pip install opencv-python numpy mediapipe
 ```
 
-## Usage
+---
 
-Ensure proper lighting and availability of a webcam. Running paint_brush.py turns on the webcam and launches the digital canvas. Hold you your hand and point your index finger in front of the camera. Moving your finger should create drawings on the canvas. Use your keyboard for the following controls:
-```
-'r' - Red
-'g' - Green
-'b' - Blue
-'w' - White
-'e' - Eraser
-'+' - Increase brush size
-'-' - Decrease brush size
-'s' - Save your painting
-'q' - Quit the application
+## 🚀 Usage
+
+Run the application with:
+
+```bash
+python main.py
 ```
 
-## Contributing
+### Controls
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
+Once the webcam is on, point your index finger in front of the camera to draw on the canvas. Use the keyboard for the following controls:
 
-Please make sure to update tests as appropriate.
+* **Colors**
 
-## License
+  * `r` → Red
+  * `g` → Green
+  * `b` → Blue
+  * `w` → White
+* **Tools**
 
-[MIT](https://choosealicense.com/licenses/mit/)
+  * `e` → Eraser
+  * `+` → Increase brush size
+  * `-` → Decrease brush size
+* **Other**
+
+  * `s` → Save your painting
+  * `q` → Quit the application
+
+⚡ *Tip: Ensure good lighting and a working webcam for best performance.*
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss your ideas. Make sure to update tests as appropriate.
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
