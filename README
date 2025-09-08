@@ -12,18 +12,7 @@ pip install opencv-python numpy mediapipe
 
 ## Usage
 
-Ensure proper lighting and availability of a webcam. Running paint_brush.py turns on the webcam and launches the digital canvas. Hold you your hand and point your index finger in front of the camera. Moving your finger should create drawings on the canvas. Use your keyboard for the following controls:
-```
-'r' - Red
-'g' - Green
-'b' - Blue
-'w' - White
-'e' - Eraser
-'+' - Increase brush size
-'-' - Decrease brush size
-'s' - Save your painting
-'q' - Quit the application
-```
+Ensure proper lighting and availability of a webcam. Running paint_brush.py turns on the webcam and launches the digital canvas. Hold you your hand and point your index finger in front of the camera. Moving your finger should create drawings on the canvas. Move your finger to the menus to adjust color and brush size. Use the panel on the right to save or clear canvas
 
 ## Contributing
 
