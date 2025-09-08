@@ -1,10 +1,12 @@
-# Air Canvas
+# Air Canvas 🎨
 
-Air canvas is an application that tracks the of the user’s index finger through a webcam to create drawings on a digital canvas.
+Air Canvas is an application that tracks the user’s **index finger** through a webcam to create drawings on a digital canvas in real time.
 
-## Prerequisites
+---
 
-The following packages are required and can be installed using pip.
+## 📦 Prerequisites
+
+Install the required packages with:
 
 ```bash
 pip install opencv-python numpy mediapipe
@@ -15,12 +17,41 @@ pip install opencv-python numpy mediapipe
 Ensure proper lighting and availability of a webcam. Running paint_brush.py turns on the webcam and launches the digital canvas. Hold you your hand and point your index finger in front of the camera. Moving your finger should create drawings on the canvas. Move your finger to the menus to adjust color and brush size. Use the panel on the right to save or clear canvas
 
 ## Contributing
+---
 
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
+## 🚀 Usage
 
-Please make sure to update tests as appropriate.
+Run the application with:
 
-## License
+```bash
+python main.py
+```
 
-[MIT](https://choosealicense.com/licenses/mit/)
+### Controls
+
+Once the webcam is on, point your index finger in front of the camera to draw on the canvas. Use the keyboard for the following controls:
+
+* **Colors**
+
+  * `r` → Red
+  * `g` → Green
+  * `b` → Blue
+  * `w` → White
+* **Tools**
+
+  * `e` → Eraser
+  * `+` → Increase brush size
+  * `-` → Decrease brush size
+* **Other**
+
+  * `s` → Save your painting
+  * `q` → Quit the application
+
+⚡ *Tip: Ensure good lighting and a working webcam for best performance.*
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, please open an issue first to discuss your ideas. Make sure to update tests as appropriate.
+
